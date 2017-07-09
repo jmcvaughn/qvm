@@ -1,0 +1,55 @@
+---
+# qvm identifier
+qvm: vm
+
+name: qvmtest
+os-variant: rhel7.3
+memory: 4096
+vcpus: 2
+
+# --disk bus=virtio,cache=writeback,io=threads
+# Disk location is sorted by qvm using zvol dictionary (required)
+disk:
+  bus: virtio
+  cache: writeback
+  io: threads
+
+  # Required, not passed to virt-install. Disk location is resolved by qvm
+  # (/dev/zvol/zpssd/VM_NAME, where VM_NAME is taken from 'name' key above).
+  zvol:
+    # It is presumed this image has been imported by qvm and snapshot
+    # zpssd/centos7@base exists
+    base: zpssd/centos7
+    # Required, must be in GiB
+    volsize: 25G
+
+# --network network=default,model=virtio
+network:
+  network: default
+  model: virtio
+
+autostart: True
+...
+---
+# qvm identifier
+qvm: user-data
+
+users:
+  - name: qvmuser
+    groups: wheel
+    lock_passwd: false
+    passwd: REPLACE_WITH_HASH_OF_PASSWORD
+
+package_upgrade: true
+
+power_state:
+  mode: reboot
+  condition: true
+...
+---
+# qvm identifier
+qvm: meta-data
+
+instance-id: iid-local01
+local-hostname: qvmtest
+...
